@@ -1,0 +1,111 @@
+NAME
+    Complete::Bash::History - Complete from bash history
+
+VERSION
+    This document describes version 0.01 of Complete::Bash::History (from
+    Perl distribution Complete-Bash-History), released on 2014-11-30.
+
+SYNOPSIS
+DESCRIPTION
+FUNCTIONS
+  complete_cmdline_from_hist(%args) -> any
+    Complete command line from recent entries in bash history.
+
+    This routine will search your bash history file (recent first a.k.a.
+    backward) for entries for the same command, and complete option with the
+    same name or argument in the same position. For example, if you have
+    history like this:
+
+     cmd1 --opt1 val arg1 arg2
+     cmd1 --opt1 valb arg1b arg2b arg3b
+     cmd2 --foo
+
+    Then if you do:
+
+     complete_cmdline_from_hist(comp_line=>'cmd1 --bar --opt1 ', comp_point=>18);
+
+    then it means the routine will search for values for option "--opt1" and
+    will return:
+
+     ["val", "valb"]
+
+    Or if you do:
+
+     complete_cmdline_from_hist(comp_line=>'cmd1 baz ', comp_point=>9);
+
+    then it means the routine will search for second argument (argv[1]) and
+    will return:
+
+     ["arg2", "arg2b"]
+
+    Arguments ('*' denotes required arguments):
+
+    *   cmdline => *str*
+
+        Command line, defaults to COMP_LINE.
+
+    *   max_hist_lines => *int* (default: 5000)
+
+        Stop searching after this amount of history lines.
+
+        -1 means unlimited (search all lines in the file).
+
+        Timestamp comments are not counted.
+
+    *   max_result => *int* (default: 100)
+
+        Stop after finding this number of distinct results.
+
+        -1 means unlimited.
+
+    *   path => *str*
+
+        Path to `.bash_history` file.
+
+        Defaults to "~/.bash_history".
+
+        If file does not exist or unreadable, will return empty completion
+        answer.
+
+    *   point => *int*
+
+        Command line, defaults to COMP_POINT.
+
+    Return value:
+
+     (any)
+
+TODO
+    Option to search only for the last N hours/days of history (using
+    timestamp in bash history).
+
+    Find recent subcommands? e.g. git {status,log,commit}
+
+SEE ALSO
+    Complete
+
+HOMEPAGE
+    Please visit the project's homepage at
+    <https://metacpan.org/release/Complete-Bash-History>.
+
+SOURCE
+    Source repository is at
+    <https://github.com/perlancar/perl-Complete-Bash-History>.
+
+BUGS
+    Please report any bugs or feature requests on the bugtracker website
+    <https://rt.cpan.org/Public/Dist/Display.html?Name=Complete-Bash-History
+    >
+
+    When submitting a bug or request, please include a test-file or a patch
+    to an existing test-file that illustrates the bug or desired feature.
+
+AUTHOR
+    perlancar <perlancar@cpan.org>
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2014 by perlancar@cpan.org.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
+
