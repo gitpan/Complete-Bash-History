@@ -1,11 +1,13 @@
 package Complete::Bash::History;
 
-our $DATE = '2014-11-30'; # DATE
-our $VERSION = '0.01'; # VERSION
+our $DATE = '2015-01-03'; # DATE
+our $VERSION = '0.02'; # VERSION
 
 use 5.010001;
 use strict;
 use warnings;
+
+#use Complete;
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -69,7 +71,7 @@ _
         max_hist_lines => {
             summary => 'Stop searching after this amount of history lines',
             schema => ['int*'],
-            default => 5000,
+            default => 3000,
             description => <<'_',
 
 -1 means unlimited (search all lines in the file).
@@ -150,9 +152,14 @@ sub complete_cmdline_from_hist {
         my ($hwords, $hcword) = @{ Complete::Bash::parse_cmdline($line, 0) };
         next unless @$hwords;
 
-        # currently doesn't yet handle: ( foo ) ..., piping |, multiple command
-        # using semicolon, etc. in general we need a more sophisticated parser
-        # than Complete::Bash::parse_cmdline() if we want to handle these.
+        # COMP_LINE (and COMP_WORDS) is provided by bash and does not include
+        # multiple commands (e.g. in '( foo; bar 1 2<tab> )' or 'foo -1 2 | bar
+        # 1 2<tab>', bash already only supplies us with 'bash 1 2' instead of
+        # the full command-line. This is different when we try to parse the full
+        # command-line from history. Complete::Bash::parse_cmdline() is not
+        # sophisticated enough to understand full bash syntax. So currently we
+        # don't support multiple/complex statements. We'll need a more
+        # proper/feature-complete bash parser for that.
 
         # strip ad-hoc environment setting, e.g.: DEBUG=1 ANOTHER="foo bar" cmd
         while (1) {
@@ -201,7 +208,7 @@ sub complete_cmdline_from_hist {
 }
 
 1;
-#ABSTRACT: Complete from bash history
+# ABSTRACT: Complete command line from recent entries in bash history
 
 __END__
 
@@ -211,11 +218,11 @@ __END__
 
 =head1 NAME
 
-Complete::Bash::History - Complete from bash history
+Complete::Bash::History - Complete command line from recent entries in bash history
 
 =head1 VERSION
 
-This document describes version 0.01 of Complete::Bash::History (from Perl distribution Complete-Bash-History), released on 2014-11-30.
+This document describes version 0.02 of Complete::Bash::History (from Perl distribution Complete-Bash-History), released on 2015-01-03.
 
 =head1 SYNOPSIS
 
@@ -262,7 +269,7 @@ Arguments ('*' denotes required arguments):
 
 Command line, defaults to COMP_LINE.
 
-=item * B<max_hist_lines> => I<int> (default: 5000)
+=item * B<max_hist_lines> => I<int> (default: 3000)
 
 Stop searching after this amount of history lines.
 
@@ -290,17 +297,7 @@ Command line, defaults to COMP_POINT.
 
 =back
 
-Return value:
-
- (any)
-
-=head1 TODO
-
-Option to search only for the last N hours/days of history (using timestamp in
-bash history).
-
-Find recent subcommands? e.g. git {status,log,commit}
-
+Return value:  (any)
 =head1 SEE ALSO
 
 
@@ -328,7 +325,7 @@ perlancar <perlancar@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2014 by perlancar@cpan.org.
+This software is copyright (c) 2015 by perlancar@cpan.org.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
